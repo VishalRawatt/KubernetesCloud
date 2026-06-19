@@ -22,7 +22,15 @@ spec:
         image: devarsyashah/resnet-dvj:v1
         ports:
         - containerPort: 8080
+        
+        resources:
+          requests:
+            cpu: "100m"
+            memory: "128Mi"
 
+          limits:
+            cpu: "500m"
+            memory: "512Mi"
 #ClusterIP Service
 ---
 apiVersion: v1
