@@ -79,7 +79,7 @@ Create a ReplicaSet:
 kubectl apply -f resnet_replicaset.yaml
 ```
 
-![alt text](image.png)
+![alt text](images/image.png)
 
 We configured:
 
@@ -101,7 +101,7 @@ Delete one Pod:
 kubectl delete pod resnet-rs-h59vk
 ```
 
-![alt text](image-1.png)
+![alt text](images/image-1.png)
 
 A new Pod is automatically created because the ReplicaSet maintains the desired number of replicas.
 
@@ -139,7 +139,7 @@ kubectl -n cloudproject get rs
 kubectl -n cloudproject get po
 ```
 
-![alt text](image-2.png)
+![alt text](images/image-2.png)
 
 We can now see:
 
@@ -198,7 +198,7 @@ kubectl scale deployment resnet-deployment --replicas=5 -n cloudproject
 ## ClusterIP
 Internal communication only.
 
-![alt text](image-9.png)
+![alt text](images/image-9.png)
 
 ## NodePort
 Exposes the application using NodeIP:NodePort.
@@ -219,7 +219,7 @@ Check services:
 kubectl -n cloudproject get svc
 ```
 
-![alt text](image-8.png)
+![alt text](images/image-8.png)
 
 NodePort works but depends on the node IP and assigned port.
 
@@ -239,9 +239,9 @@ minikube tunnel
 
 After the tunnel starts, the application becomes accessible through:
 
-![alt text](image-7.png)
+![alt text](images/image-7.png)
 
-![alt text](image-6.png)
+![alt text](images/image-6.png)
 
 ```text
 http://127.0.0.1:8080
@@ -273,7 +273,7 @@ Start the tunnel:
 minikube tunnel
 ```
 
-![alt text](image-5.png)
+![alt text](images/image-5.png)
 
 Check Ingress:
 
@@ -281,7 +281,7 @@ Check Ingress:
 kubectl -n cloudproject get ingress
 ```
 
-![alt text](image-4.png)
+![alt text](images/image-4.png)
 
 Edit the Windows hosts file:
 
@@ -289,7 +289,7 @@ Edit the Windows hosts file:
 notepad C:\Windows\System32\drivers\etc\hosts
 ```
 
-![alt text](image-3.png)
+![alt text](images/image-3.png)
 
 Add an entry similar to:
 
