@@ -9,11 +9,11 @@ For this project, we need basic knowledge of:
 - Minikube
 - kubectl
 
-Make sure Docker Desktop is running in the background before starting Minikube.
+Make sure Docker Desktop is running before starting Minikube.
 
 ---
 
-## Starting Minikube
+## Start Minikube
 
 Start the local Kubernetes cluster:
 
@@ -21,7 +21,7 @@ Start the local Kubernetes cluster:
 minikube start
 ```
 
-Minikube creates a local Kubernetes cluster and uses Docker images.
+Minikube creates a local Kubernetes cluster and uses Docker to run Kubernetes nodes.
 
 ---
 
@@ -35,7 +35,7 @@ Create the pod:
 kubectl apply -f resnet.yaml
 ```
 
-Check running pods:
+Check the pod:
 
 ```bash
 kubectl get pods
@@ -47,15 +47,15 @@ View pod logs:
 kubectl logs -f resnet-pod
 ```
 
-This helps us monitor the pod status and check whether the container is running correctly.
+This helps us check whether the container is starting correctly.
 
-Forward the container port to the local machine:
+Forward the container port to localhost:
 
 ```bash
 kubectl port-forward pod/resnet-pod 8081:8080
 ```
 
-Now the application can be accessed through:
+Access the application:
 
 ```text
 http://localhost:8081
@@ -65,15 +65,15 @@ http://localhost:8081
 
 A Pod is the smallest unit in Kubernetes.
 
-A Pod acts as a box that contains one or more containers running together.
+A Pod acts like a box that contains one or more containers running together.
 
 ---
 
 ## ReplicaSet
 
-A ReplicaSet ensures that a desired number of pods are always running.
+A ReplicaSet ensures that a desired number of Pods are always running.
 
-Create the ReplicaSet:
+Create a ReplicaSet:
 
 ```bash
 kubectl apply -f resnet_replicaset.yaml
@@ -85,21 +85,23 @@ We configured:
 replicas: 3
 ```
 
-Therefore Kubernetes creates 3 pods.
+Therefore Kubernetes creates 3 Pods.
 
-Check the pods:
+Check Pods:
 
 ```bash
 kubectl get pods
 ```
 
-Delete one pod:
+Delete one Pod:
 
 ```bash
-kubectl delete pod <pod-name>
+kubectl delete pod resnet-rs-h59vk
 ```
 
-Kubernetes automatically creates a new pod to maintain the desired replica count.
+A new Pod is automatically created because the ReplicaSet maintains the desired number of replicas.
+
+This solves the self-healing requirement.
 
 Delete the ReplicaSet:
 
@@ -125,7 +127,7 @@ Deploy the application:
 kubectl -n cloudproject apply -f deployment.yaml
 ```
 
-Check deployment resources:
+Check resources:
 
 ```bash
 kubectl -n cloudproject get deploy
@@ -133,11 +135,19 @@ kubectl -n cloudproject get rs
 kubectl -n cloudproject get po
 ```
 
+We can now see:
+
+- Deployment
+- ReplicaSet
+- Pods
+
+managed together.
+
 ---
 
 ## Updating the Application
 
-If a new Docker image version is available:
+If a new image version is available:
 
 ```bash
 kubectl set image deployment/resnet-deployment resnet-container=<image_name>
@@ -153,7 +163,7 @@ kubectl set image deployment/<deployment-name> <container-name>=<image-name>
 
 ## Rollback
 
-If the update causes issues, revert to the previous version:
+Revert to the previous version if an update fails:
 
 ```bash
 kubectl rollout undo deployment/<deployment-name> -n <namespace>
@@ -180,20 +190,20 @@ kubectl scale deployment resnet-deployment --replicas=5 -n cloudproject
 # Kubernetes Services
 
 ## ClusterIP
-Internal communication only. Accessible only inside the Kubernetes cluster.
+Internal communication only.
 
 ## NodePort
-Exposes the application outside the cluster using NodeIP:NodePort.
+Exposes the application using NodeIP:NodePort.
 
 ## LoadBalancer
-Creates an external load balancer and provides a public entry point to the application.
+Provides a public entry point to the application.
 
 ## Ingress
-Smart traffic router that routes requests to different services using domains or paths.
+Acts as a smart traffic router.
 
 ---
 
-## NodePort Service
+## NodePort
 
 Check services:
 
@@ -201,15 +211,17 @@ Check services:
 kubectl -n cloudproject get svc
 ```
 
-NodePort exposes the application externally but depends on the node IP and assigned port.
+NodePort works but depends on the node IP and assigned port.
 
 ---
 
-## LoadBalancer Service
+## LoadBalancer
 
-Initially, the external IP may remain in a pending state.
+Create a LoadBalancer service.
 
-To expose the LoadBalancer locally in Minikube:
+Initially the External IP may stay in a pending state.
+
+Run:
 
 ```bash
 minikube tunnel
@@ -220,6 +232,64 @@ After the tunnel starts, the application becomes accessible through:
 ```text
 http://127.0.0.1:8080
 ```
+
+---
+
+# Ingress
+
+Problem:
+
+If we have multiple services, creating a separate LoadBalancer for every service can become expensive.
+
+Ingress solves this by providing:
+
+```text
+One Entry Point → Multiple Destinations
+```
+
+Enable Ingress:
+
+```bash
+minikube addons enable ingress
+```
+
+Start the tunnel:
+
+```bash
+minikube tunnel
+```
+
+Check Ingress:
+
+```bash
+kubectl -n cloudproject get ingress
+```
+
+Edit the Windows hosts file:
+
+```powershell
+notepad C:\Windows\System32\drivers\etc\hosts
+```
+
+Add an entry similar to:
+
+```text
+127.0.0.1 resnet.local
+```
+
+or
+
+```text
+<minikube-ip> resnet.local
+```
+
+Now requests to:
+
+```text
+http://resnet.local
+```
+
+can be routed to the correct Kubernetes service.
 
 ---
 
@@ -237,7 +307,7 @@ Service (NodePort / LoadBalancer)
 Users
 ```
 
-### Autoscaling Architecture
+### Future Autoscaling Architecture
 
 ```text
 Deployment
