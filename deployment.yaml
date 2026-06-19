@@ -1,0 +1,82 @@
+apiVersion: apps/v1
+kind: Deployment
+
+metadata:
+  name: resnet-deployment
+
+spec:
+  replicas: 3
+
+  selector:
+    matchLabels:
+      app: resnet
+
+  template:
+    metadata:
+      labels:
+        app: resnet
+
+    spec:
+      containers:
+      - name: resnet-container
+        image: devarsyashah/resnet-dvj:v1
+        ports:
+        - containerPort: 8080
+
+#ClusterIP Service
+---
+apiVersion: v1
+kind: Service
+
+metadata:
+  name: resnet-service
+
+spec:
+  selector:
+    app: resnet
+
+  ports:
+  - protocol: TCP
+    port: 8080
+    targetPort: 8080
+
+  type: ClusterIP
+
+# NodePort service
+---
+apiVersion: v1
+kind: Service
+
+metadata:
+  name: resnet-nodeport
+
+spec:
+  selector:
+    app: resnet
+
+  ports:
+  - protocol: TCP
+    port: 8080
+    targetPort: 8080
+    nodePort: 30080
+
+  type: NodePort
+
+# LoadBalancer service
+---
+apiVersion: v1
+kind: Service
+
+metadata:
+  name: resnet-lb
+
+spec:
+  selector:
+    app: resnet
+
+  ports:
+  - protocol: TCP
+    port: 8080
+    targetPort: 8080
+
+  type: LoadBalancer

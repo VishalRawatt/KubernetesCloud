@@ -1,0 +1,23 @@
+apiVersion: apps/v1
+kind: ReplicaSet
+metadata:
+  name: resnet-rs
+
+spec:
+  replicas: 3
+
+  selector:
+    matchLabels:
+      app: resnet
+
+  template:
+    metadata:
+      labels:
+        app: resnet
+
+    spec:
+      containers:
+      - name: resnet-container
+        image: devarsyashah/resnet-dvj:v1
+        ports:
+        - containerPort: 8080

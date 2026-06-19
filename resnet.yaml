@@ -1,0 +1,10 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: resnet-pod
+spec:
+  containers:
+  - name: resnet-container
+    image: devarsyashah/resnet-dvj:v1
+    ports:
+    - containerPort: 8080
